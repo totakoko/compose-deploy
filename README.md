@@ -17,7 +17,7 @@ Take a look at [totakoko-infrastructure](https://github.com/totakoko/totakoko-in
 
 ## Getting started
 
-## Infrastructure Overview
+### Infrastructure Overview
 
 Compose Deploy can deploy as many docker-compose files as you want.
 The layout of your infrastructure repository should be as follows.
