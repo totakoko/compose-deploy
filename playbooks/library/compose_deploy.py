@@ -1,0 +1,84 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import errno
+import os
+import re
+from ansible.module_utils.basic import AnsibleModule
+from ansible.errors import AnsibleError
+
+class ComposeDeploy(object):
+
+  def __init__(self):
+    self.env_prefix = 'cd_'
+    self.env_directory_separator = '_'
+    self.env_var_separator = '__'
+    self.env_regex = re.compile('({}((?:(?!{}).)+){}(.+))'.format(
+        self.env_prefix,
+        self.env_var_separator,
+        self.env_var_separator
+        ), re.IGNORECASE)
+    self.modules_root = os.getenv('MODULES_ROOT')
+    if self.modules_root is None:
+      raise AnsibleError('Missing environment variable MODULES_ROOT.')
+    if not os.path.isdir(self.modules_root):
+      raise AnsibleError('Could not find modules root. Please ensure that `{}` is the correct path.'.format(self.modules_root))
+
+  def run(self):
+    self.save_env_to_files()
+    return self.load_modules()
+
+  def load_modules(self):
+    '''
+    Scan the modules root, load the metadata of each module and return everything as a fact for ansible
+    '''
+    modules = [dict(name=d) for d in os.listdir(self.modules_root) if os.path.isdir(os.path.join(self.modules_root, d)) and d[0] != '.']
+    if not modules:
+      raise AnsibleError('Could not find any module. Please ensure that `{}` is the correct path.'.format(self.modules_root))
+
+    for module in modules:
+      def isfile(filename):
+        return os.path.isfile(os.path.join(self.modules_root, module['name'], filename))
+
+      module['compose'] = isfile('docker-compose.yml')
+      module['prehook'] = isfile('pre.yml')
+
+    return modules
+
+  def save_env_to_files(self):
+    '''
+    Map environment variables that begin with a prefix to the filesystem.
+    '''
+    env_variables_matches = [self.env_regex.search(env) for env in os.environ]
+    matching_env_variables = [match.groups() for match in env_variables_matches if match]
+    for (env_variable, file_path, var_name) in matching_env_variables:
+      file_path = file_path.replace(self.env_directory_separator, os.path.sep)
+
+      dirs, _ = os.path.split(file_path)
+      mkdirs_p(dirs)
+
+      with open(file_path, 'a') as f:
+        # print('Found env variable `{}`: updating `{}` with `{}={}`'.format(env_variable, file_path, var_name, os.environ[env_variable]))
+        f.write('{}={}\n'.format(var_name, os.environ[env_variable]))
+
+def mkdirs_p(path):
+  try:
+    os.makedirs(path)
+  except OSError as e:
+    if e.errno == errno.EEXIST and os.path.isdir(path):
+      pass
+    else:
+      raise
+
+
+def main():
+  module = AnsibleModule({})
+  try:
+    modules = ComposeDeploy().run()
+    module.warn('{}'.format(modules))
+    module.exit_json(changed=False, ansible_facts=dict(modules=modules))
+  except Exception as e:
+    module.fail_json(msg=e.message)
+
+if __name__ == '__main__':
+  main()

@@ -1,0 +1,63 @@
+- hosts: localhost
+  tasks:
+    - compose_deploy:
+
+- hosts: all
+  tasks:
+    - name: "Fetch modules variables"
+      set_fact:
+        MODULES_ROOT: "{{ lookup('env', 'MODULES_ROOT') }}"
+        modules: "{{ hostvars['localhost']['modules'] }}"
+
+    - import_tasks: tasks/install-docker.yml
+    - import_tasks: tasks/install-docker-compose.yml
+
+    - name: "Create parent folders"
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 600
+      loop:
+        - /srv/config
+        - /srv/data
+
+    - name: "Synchronize modules configurations"
+      synchronize:
+        src: "{{ MODULES_ROOT }}/{{ item.name }}/"
+        dest: /srv/config/{{ item.name }}/
+        checksum: true
+        times: false
+        delete: true
+      loop: "{{ modules }}"
+      register: synchronizations
+
+    - name: "Create data folders"
+      file:
+        path: "/srv/data/{{ item.name }}"
+        state: directory
+        mode: 600
+      loop: "{{ modules }}"
+
+    - name: "Run pre-deploy hooks"
+      include_tasks: "{{ MODULES_ROOT }}/{{ item.name }}/pre.yml"
+      when: item.prehook
+      loop: "{{ modules }}"
+
+    - block:
+      - name: "Restart services"
+        shell: |
+          cd "/srv/config/{{ item.item.name }}"
+          docker-compose stop
+          docker-compose up -d --remove-orphans
+        when: item.item.compose and item.changed
+        register: restarts
+        loop: "{{ synchronizations.results }}"
+
+      rescue:
+        # The .failed file will trigger a changed event for the next rsync
+        - name: "Mark module as failed"
+          file:
+            path: "/srv/config/{{ item.item.item.name }}/.failed"
+            state: touch
+          when: item.item.failed | default(False)
+          loop: "{{ restarts.results }}"

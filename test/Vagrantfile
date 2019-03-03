@@ -1,0 +1,26 @@
+Vagrant.configure("2") do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+  config.vm.box = "debian/stretch64"
+
+  config.vm.box_check_update = false
+
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+
+  # keep the insecure key (~/.vagrant.d/insecure_private_key)
+  config.ssh.insert_key = false
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "2048"
+  end
+
+  config.vm.network "private_network", ip: "10.10.10.10"
+
+  config.vm.provision "shell", inline: <<-SHELL
+    cp -r /home/vagrant/.ssh /root/.ssh
+    chown -R root: /root/.ssh
+    sed -ri 's/#(PermitRootLogin)/\\1/' /etc/ssh/sshd_config
+    systemctl reload ssh.service
+  SHELL
+end

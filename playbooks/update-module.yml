@@ -1,0 +1,8 @@
+- hosts: all
+  tasks:
+    - name: "Pull and restart services"
+      shell: |
+        cd "/srv/config/{{ module }}"
+        docker-compose pull
+        docker-compose stop
+        docker-compose up -d {{ services }}

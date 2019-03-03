@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  web:
+    image: totakoko/totakoko.com:latest
+    restart: unless-stopped
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=80"
+      - "traefik.frontend.rule=Host:totakoko.com"
+
+networks:
+  web:
+    external: true

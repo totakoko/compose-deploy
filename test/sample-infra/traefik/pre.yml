@@ -1,0 +1,11 @@
+- name: "Traefik: Create docker web network"
+  shell: docker network inspect web || docker network create web
+  changed_when: False
+
+- name: "Traefik: Create acme.json"
+  file:
+    path: /srv/data/traefik/acme.json
+    state: touch
+    mode: 0600
+    modification_time: preserve
+    access_time: preserve

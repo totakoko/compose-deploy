@@ -1,0 +1,25 @@
+- name: "Docker: install requirements"
+  apt:
+    name: "{{ packages }}"
+    update_cache: true
+  vars:
+    packages:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg2
+      - software-properties-common
+      - rsync
+
+- name: "Docker: add GPG key"
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+
+- name: "Docker: add repository"
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/debian stretch stable"
+
+- name: "Docker: install Docker"
+  apt:
+    name: docker-ce
+    update_cache: true

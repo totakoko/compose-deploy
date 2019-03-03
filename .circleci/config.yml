@@ -1,0 +1,40 @@
+version: 2
+
+jobs:
+  test:
+    docker:
+      - image: willhallonline/ansible:2.7-alpine
+    steps:
+      - checkout
+      - run: python -B -m unittest discover -p "*_test.py" playbooks/library
+
+  build-docker:
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: |
+          if [[ -z "$DOCKERHUB_USER" || -z "$DOCKERHUB_PASSWORD" ]]; then
+            echo "Missing DOCKERHUB_USER or DOCKERHUB_PASSWORD environment variables!"
+            exit 1
+          fi
+          docker build -t totakoko/compose-deploy:$CIRCLE_SHA1 .
+
+          echo "$DOCKERHUB_PASSWORD" | docker login -u $DOCKERHUB_USER --password-stdin
+          docker push totakoko/compose-deploy:$CIRCLE_SHA1
+          if [[ "$CIRCLE_BRANCH" = "master" ]]; then
+            docker tag totakoko/compose-deploy:$CIRCLE_SHA1 totakoko/compose-deploy:latest
+            docker push totakoko/compose-deploy:latest
+          fi
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - test:
+          requires: []
+      - build-docker:
+          requires:
+            - test
+
