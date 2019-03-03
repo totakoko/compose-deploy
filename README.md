@@ -132,34 +132,15 @@ Say you want to configure an API key for one of your services.
 That API key should not be publicly visible so it can't be part of the `docker-compose.yml`.
 
 Luckily, Compose Deploy contains a useful script that will map some well-crafted environment variables to the filesystem, which can then be read by Docker Compose.
-The pattern is `cd_<path>_<with>_<file>__<env_variable>`.
-Note the double underscore to separate the path from the variable name.
+The pattern is `cd_<module>_<service>_<env_variable>` and can contain only letters, digits and '_'.
 
-There are several strategies for passing environment variables to your services.
-
-#### Using <module>.env
-
-`cd_yourmodule_api.env__API_KEY=abc123`: will put `API_KEY=abc123` in `yourmodule/api.env` which can be read afterwards provided you add `env_file: api.env` to your service called `api`.
+For example, `cd_yourmodule_api_API_KEY=abc123` will put `API_KEY=abc123` in `yourmodule/api.env` which can be read afterwards provided you add `env_file: api.env` to your service called `api`.
 
 ```yaml
 services:
   api:
     ...
     env_file: api.env
-    ...
-```
-
-#### Using .env
-
-`cd_yourmodule_.env__API_KEY=abc123`: will put `API_KEY=abc123` in `yourmodule/.env`. This file is [automatically sourced by Compose](https://docs.docker.com/compose/environment-variables/#the-env-file), but you must explicitly add each variable to the services using it.
-
-```yaml
-services:
-  api:
-    ...
-    environment:
-      ...
-      - API_KEY
     ...
 ```
 

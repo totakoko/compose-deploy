@@ -10,14 +10,7 @@ from ansible.errors import AnsibleError
 class ComposeDeploy(object):
 
   def __init__(self):
-    self.env_prefix = 'cd_'
-    self.env_directory_separator = '_'
-    self.env_var_separator = '__'
-    self.env_regex = re.compile('({}((?:(?!{}).)+){}(.+))'.format(
-        self.env_prefix,
-        self.env_var_separator,
-        self.env_var_separator
-        ), re.IGNORECASE)
+    self.env_regex = re.compile('(cd_([^_]+)_([^_]+)_(.+))', re.IGNORECASE)
     self.modules_root = os.getenv('MODULES_ROOT')
     if self.modules_root is None:
       raise AnsibleError('Missing environment variable MODULES_ROOT.')
@@ -51,12 +44,12 @@ class ComposeDeploy(object):
     '''
     env_variables_matches = [self.env_regex.search(env) for env in os.environ]
     matching_env_variables = [match.groups() for match in env_variables_matches if match]
-    for (env_variable, file_path, var_name) in matching_env_variables:
-      file_path = os.path.join(self.modules_root, file_path.replace(self.env_directory_separator, os.path.sep))
+    for (env_variable, module_name, container_name, var_name) in matching_env_variables:
+      module_path = os.path.join(self.modules_root, module_name)
+      if not os.path.isdir(module_path):
+        raise AnsibleError('Module `{}` not found. Make sure that the directory `{}` exists.'.format(module_name, module_path))
 
-      dirs, _ = os.path.split(file_path)
-      mkdirs_p(dirs)
-
+      file_path = os.path.join(module_path, container_name + '.env')
       with open(file_path, 'a') as f:
         # print('Found env variable `{}`: updating `{}` with `{}={}`'.format(env_variable, file_path, var_name, os.environ[env_variable]))
         f.write('{}={}\n'.format(var_name, os.environ[env_variable]))
