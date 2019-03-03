@@ -71,7 +71,7 @@ def main():
     module.warn('{}'.format(modules))
     module.exit_json(changed=False, ansible_facts=dict(modules=modules))
   except Exception as e:
-    module.fail_json(msg=e.message)
+    module.fail_json(msg='{}'.format(e))
 
 if __name__ == '__main__':
   main()
