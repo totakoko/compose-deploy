@@ -52,7 +52,7 @@ class ComposeDeploy(object):
     env_variables_matches = [self.env_regex.search(env) for env in os.environ]
     matching_env_variables = [match.groups() for match in env_variables_matches if match]
     for (env_variable, file_path, var_name) in matching_env_variables:
-      file_path = file_path.replace(self.env_directory_separator, os.path.sep)
+      file_path = os.path.join(self.modules_root, file_path.replace(self.env_directory_separator, os.path.sep))
 
       dirs, _ = os.path.split(file_path)
       mkdirs_p(dirs)
