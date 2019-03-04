@@ -7,6 +7,7 @@ usage() {
   echo "Available commands:"
   echo "  - deploy : deploy the infrastructure"
   echo "  - exec <commands>... : run shell commands on the server"
+  echo "  - run [-v local_bind:remote_bind...] <module> <service> <commands>... : run one-time commands against a service"
   echo "  - update-module <module> [services...] : update a specific module (and only some services if specified)"
   exit 1
 }
@@ -66,6 +67,35 @@ case "$command" in
     usage
   fi
   ansible-playbook ${ANSIBLE_ARGS:--v} -e commands="'$commands'" "$current_dir"/playbooks/exec.yml
+  ;;
+
+"run")
+  mounts=""
+  while getopts v: option; do
+    case "${option}" in
+    v) mounts="$mounts,${OPTARG}";;
+    esac
+  done
+  shift "$((OPTIND-1))"
+  mounts="${mounts:1}"
+  module="$1"
+  if [ -z "$module" ]; then
+    usage
+  fi
+  service="$2"
+  if [ -z "$service" ]; then
+    usage
+  fi
+  shift $(( $# > 0 ? 2 : 0 ))
+  escaped_commands=''
+  for i in "$@"; do
+    i="${i//\\/\\\\}"
+    escaped_commands="$escaped_commands \"${i//\"/\\\"}\""
+  done
+  if [ -z "$escaped_commands" ]; then
+    usage
+  fi
+  ansible-playbook ${ANSIBLE_ARGS:--v} -e rawmounts="'$mounts'" -e module="$module" -e service="$service" -e commands="'$escaped_commands'" "$current_dir"/playbooks/run.yml
   ;;
 
 "update-module")

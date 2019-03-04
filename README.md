@@ -165,7 +165,7 @@ compose-deploy update-module <module> <services>...`
 **Note that there is currently no checks for the container health.**
 
 
-### One-off commands
+### One-off server commands
 
 Often, you will need to execute commands on the server.
 While you can do so via SSH, Compose Deploy provides a way to execute a command on the server.
@@ -174,6 +174,31 @@ e.g.:
 ```sh
 compose-deploy exec 'cat /srv/data/traefik/acme.json'
 compose-deploy exec 'apt update; apt list --upgradable'
+```
+
+
+### One-off container commands
+
+You may want to run `docker-compose run` commands against a service to trigger a special action, import or export data, etc.
+Compose Deploy provides a `run` command to help you with that task.
+The syntax is `compose-deploy run [-v local_bind:remote_bind...] <module> <service> <commands>...`.
+This command is very helpful as all the configurations, volumes and networks are available in the new container.
+
+Examples:
+
+- Get the traefik version
+```sh
+compose-deploy run traefik traefik version
+```
+
+- Import data in the application (example taken from [filharmonic-infrastructure](https://github.com/MTES-MCT/filharmonic-infrastructure)
+```sh
+compose-deploy run -v "./inspecteurs.csv:/inspecteurs.csv" filharmonic api filharmonic-api -import-inspecteurs "/inspecteurs.csv"
+```
+
+- Dump PostgreSQL data
+```sh
+compose-deploy run -v "./backup:/backup" filharmonic postgresql postgresql sh -c 'PGPASSWORD=filharmonic_password pg_dumpall -U filharmonic -h postgresql -f /backup/dump.sql'
 ```
 
 

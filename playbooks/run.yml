@@ -1,0 +1,47 @@
+- hosts: all
+  tasks:
+    - compose_run:
+        rawmounts: "{{ rawmounts }}"
+      delegate_to: localhost
+
+    - name: "Create temporary directory"
+      tempfile:
+        state: directory
+        prefix: compose-deploy-mounts-
+      register: remote_tempdir
+      when: mounts
+
+    - name: "Create command"
+      set_fact:
+        mount_args: "{{ mount_args | default('') }} -v '{{ remote_tempdir.path }}/{{ mount_index }}:{{ item.destination }}'"
+      loop: "{{ mounts }}"
+      loop_control:
+        index_var: mount_index
+
+    - block:
+      - name: "Upload volumes"
+        synchronize:
+          src: "{{ item.source }}{{ '/.' if item.isdir else ''}}"
+          dest: "{{ remote_tempdir.path }}/{{ mount_index }}"
+        loop: "{{ mounts }}"
+        loop_control:
+          index_var: mount_index
+
+      - name: "Exec shell commands"
+        shell: docker-compose -f "/srv/config/{{ module }}/docker-compose.yml" run --rm {{ mount_args | default('') }} {{ service }} {{ commands }}
+
+      - name: "Download volumes"
+        synchronize:
+          src: "{{ remote_tempdir.path }}/{{ mount_index }}{{ '/.' if item.isdir else ''}}"
+          dest: "{{ item.source }}"
+          mode: pull
+        loop: "{{ mounts }}"
+        loop_control:
+          index_var: mount_index
+
+      always:
+        - name: "Clean mounts"
+          file:
+            path: "{{ remote_tempdir.path }}"
+            state: absent
+          when: mounts
