@@ -6,40 +6,46 @@ import compose_run
 class TestComposeExec(unittest.TestCase):
 
   def setUp(self):
-    pass
-    # shutil.rmtree('.tmp', True)
-    # os.mkdir('.tmp')
+    shutil.rmtree('.tmp', True)
+    os.mkdir('.tmp')
+    os.mkdir('.tmp/dir')
 
   def test_build_mounts(self):
     self.assertEqual(compose_run.build_mounts(''), [])
     self.assertEqual(compose_run.build_mounts('Dockerfile:/key'), [
       {
         'source': 'Dockerfile',
-        'destination': '/key'
+        'destination': '/key',
+        'isdir': False
       }
     ])
     self.assertEqual(compose_run.build_mounts('./:/dir/mount1,Dockerfile:/key'), [
       {
         'source': './',
-        'destination': '/dir/mount1'
+        'destination': '/dir/mount1',
+        'isdir': True
       },
       {
         'source': 'Dockerfile',
-        'destination': '/key'
+        'destination': '/key',
+        'isdir': False
       }
     ])
-    self.assertEqual(compose_run.build_mounts('./:/dir/mount1,Dockerfile:/key,/opt/data:/import'), [
+    self.assertEqual(compose_run.build_mounts('./:/dir/mount1,Dockerfile:/key,.tmp/dir:/import'), [
       {
         'source': './',
-        'destination': '/dir/mount1'
+        'destination': '/dir/mount1',
+        'isdir': True
       },
       {
         'source': 'Dockerfile',
-        'destination': '/key'
+        'destination': '/key',
+        'isdir': False
       },
       {
-        'source': '/opt/data',
-        'destination': '/import'
+        'source': '.tmp/dir',
+        'destination': '/import',
+        'isdir': True
       }
     ])
 
