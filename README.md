@@ -61,7 +61,7 @@ docker run -it --rm \
 
 And you have to add the following environment variables:
 - SSH_FINGERPRINT: can be retrieved by running `ssh-keyscan -H <server>`
-- SSH_PRIVATE_KEY_BASE64: can be retrieved by running `cat ~/.ssh/<your_private_key>`
+- SSH_PRIVATE_KEY: can be retrieved by running `cat ~/.ssh/<your_private_key>`
 
 You can also encode the values using base64 into *SSH_FINGERPRINT_BASE64* and *SSH_PRIVATE_KEY_BASE64*.
 Do so by adding `| base64` after the command.
