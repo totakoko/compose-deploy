@@ -10,7 +10,7 @@ from ansible.errors import AnsibleError
 class ComposeDeploy(object):
 
   def __init__(self):
-    self.env_regex = re.compile('(cd_([^_]+)_([^_]+)_(.+))', re.IGNORECASE)
+    self.env_regex = re.compile('(cd_([^_]+)_([^_]*)_(.+))', re.IGNORECASE)
     self.modules_root = os.getenv('MODULES_ROOT')
     if self.modules_root is None:
       raise AnsibleError('Missing environment variable MODULES_ROOT.')

@@ -22,6 +22,7 @@ class TestComposeDeploy(unittest.TestCase):
     os.environ['cd_stack_api_API_KEY'] = '123213123'
     os.environ['cd_stack_database_PASSWORD'] = 'secret'
     os.environ['cd_stack_database_USER'] = 'postgres'
+    os.environ['cd_stack__PASSWORD'] = 'secret'
     os.environ['MODULES_ROOT'] = '.tmp/modules'
     compose_deploy.ComposeDeploy().save_env_to_files()
     with open('.tmp/modules/stack/api.env') as f:
@@ -30,6 +31,8 @@ class TestComposeDeploy(unittest.TestCase):
       content = f.read()
       self.assertIn('USER=postgres\n', content)
       self.assertIn('PASSWORD=secret\n', content)
+    with open('.tmp/modules/stack/.env') as f:
+      self.assertEqual(f.read(), 'PASSWORD=secret\n')
 
 if __name__ == '__main__':
   unittest.main()

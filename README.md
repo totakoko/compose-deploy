@@ -144,6 +144,10 @@ services:
     ...
 ```
 
+If you omit the `<service>` part (`cd_<module>__<env_variable>`) then the file will be saved in `<module>/.env`.
+The [.env file](https://docs.docker.com/compose/environment-variables/#the-env-file) is sourced automatically by Compose.
+This can be useful for dynamic variables in the Compose file such as labels.
+
 
 ### Updating images
 
