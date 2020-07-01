@@ -23,6 +23,10 @@ jobs:
 
           echo "$DOCKERHUB_PASSWORD" | docker login -u $DOCKERHUB_USER --password-stdin
           docker push totakoko/compose-deploy:$CIRCLE_SHA1
+          docker tag totakoko/compose-deploy:$CIRCLE_SHA1 totakoko/compose-deploy:$CIRCLE_BRANCH
+          docker push totakoko/compose-deploy:$CIRCLE_BRANCH
+
+          # Define master as latest
           if [[ "$CIRCLE_BRANCH" = "master" ]]; then
             docker tag totakoko/compose-deploy:$CIRCLE_SHA1 totakoko/compose-deploy:latest
             docker push totakoko/compose-deploy:latest
