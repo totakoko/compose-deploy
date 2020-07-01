@@ -48,6 +48,12 @@ echo "$SSH_HOST ansible_port=$SSH_PORT remote_user=$SSH_USER" > "$current_dir"/i
 
 ANSIBLE_ARGS="${ANSIBLE_ARGS:-}"
 export MODULES_ROOT="${MODULES_ROOT:-/modules}"
+if [ -n "$GITLAB_CI" ]; then
+  MODULES_ROOT="$CI_PROJECT_DIR"
+fi
+if [ -n "$CIRCLECI" ]; then
+  MODULES_ROOT="$CIRCLE_WORKING_DIRECTORY"
+fi
 
 if [ -n "$SSH_FROM_ENV" ]; then
   update_ssh_configuration

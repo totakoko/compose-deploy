@@ -75,11 +75,8 @@ Do so by adding `| base64` after the command.
 ```yaml
 deploy:
   stage: deploy
-  image:
-    name: totakoko/compose-deploy
-    entrypoint: ['']
-  script:
-    - MODULES_ROOT=$PWD compose-deploy deploy
+  image: totakoko/compose-deploy
+  script: deploy
   only:
     - master
 ```
@@ -108,8 +105,6 @@ jobs:
       - checkout
       - run:
           command: compose-deploy deploy
-          environment:
-            MODULES_ROOT: /root/project
 
 workflows:
   version: 2
