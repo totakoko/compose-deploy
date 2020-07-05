@@ -20,7 +20,7 @@ git clone git@gitlab.com:totakoko/compose-deploy-ci-project-gitlab.git sample-pr
 cd sample-project
 git checkout -b $branch || true
 sed -ri "s/(compose-deploy-ci:)\w+/\1$hash/" .gitlab-ci.yml
-sed -ri "s/(CONTENT=\w+)/\1$hash/" gitlab/docker-compose.yml
+sed -ri "s/(CONTENT=)\w*/\1$hash/" gitlab/docker-compose.yml
 git add -A
 git commit -m "Testing deployment of compose-deploy:$hash"
 git push origin $branch
