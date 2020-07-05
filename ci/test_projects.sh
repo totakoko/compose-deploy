@@ -17,7 +17,7 @@ git config --global user.email "maxime@dreau.fr"
 git config --global user.name "Maxime Dréau (CI)"
 
 git clone git@gitlab.com:totakoko/compose-deploy-ci-project-gitlab.git sample-project
-cf sample-project
+cd sample-project
 git checkout -b $branch || true
 sed -ri "s/(compose-deploy-ci:)\w+/\1$hash/" .gitlab-ci.yml
 sed -ri "s/(CONTENT=\w+)/\1$hash/" gitlab/docker-compose.yml
