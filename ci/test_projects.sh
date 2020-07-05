@@ -18,7 +18,11 @@ git config --global user.name "Maxime Dréau (CI)"
 
 git clone git@gitlab.com:totakoko/compose-deploy-ci-project-gitlab.git sample-project
 cd sample-project
-git checkout -b $branch || true
+if git fetch origin $branch; then
+  git checkout $branch
+else
+  git checkout -b $branch
+fi
 sed -ri "s/(compose-deploy-ci:)\w+/\1$hash/" .gitlab-ci.yml
 sed -ri "s/(CONTENT=)\w*/\1$hash/" gitlab/docker-compose.yml
 git add -A
