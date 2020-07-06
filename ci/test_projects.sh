@@ -37,11 +37,11 @@ check_deployment() {
 
   local counter=0
   local maxCounter=3
-  local sleepTime=5
+  local sleepTime=60
 
   # wait for 5 minutes maximum
   while [ $counter -lt $maxCounter ]; do
-    local serverHash=$(curl -s --max-time 5 $serverURL)
+    local serverHash=$(wget -O- -q -s --timeout 5 $serverURL)
     if [ "$serverHash" = "$expectedHash" ]; then
       echo "$label deployment succeeded"
       return 0
@@ -51,7 +51,7 @@ check_deployment() {
   done
 
   echo "$label deployment failed"
-  echo "Curl output: $(curl -v --max-time 5 $serverURL)"
+  echo "wget output: $(wget -O- -q -v --timeout 5 $serverURL)"
   return 1
 }
 
