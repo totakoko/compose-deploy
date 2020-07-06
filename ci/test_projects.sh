@@ -41,7 +41,7 @@ check_deployment() {
 
   # wait for 5 minutes maximum
   while [ $counter -lt $maxCounter ]; do
-    local serverHash=$(wget -O- -q -s --timeout 5 $serverURL)
+    local serverHash=$(wget -O- -q --timeout 5 $serverURL)
     if [ "$serverHash" = "$expectedHash" ]; then
       echo "$label deployment succeeded"
       return 0
