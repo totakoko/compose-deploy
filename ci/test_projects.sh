@@ -51,7 +51,7 @@ check_deployment() {
   done
 
   echo "$label deployment failed"
-  echo "wget output: $(wget -O- -q -v --timeout 5 $serverURL)"
+  echo "wget output: $(wget -O- -q -S --timeout 5 $serverURL)"
   return 1
 }
 
