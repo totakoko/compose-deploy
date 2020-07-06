@@ -30,4 +30,31 @@ git commit -m "Testing deployment of compose-deploy:$hash"
 git push origin $branch
 rm -rf sample-project
 
+check_deployment() {
+  local label=$1
+  local serverURL=$2
+  local expectedHash=$3
+
+  local counter=0
+  local maxCounter=3
+  local sleepTime=5
+
+  # wait for 5 minutes maximum
+  while [ $counter -lt $maxCounter ]; do
+    local serverHash=$(curl -s --max-time 5 $serverURL)
+    if [ "$serverHash" = "$expectedHash" ]; then
+      echo "$label deployment succeeded"
+      return 0
+    fi
+    sleep $sleepTime
+    counter=$((counter+1))
+  done
+
+  echo "$label deployment failed"
+  echo "Curl output: $(curl -v --max-time 5 $serverURL)"
+  return 1
+}
+
+check_deployment "GitLab CI" totakoko.com:8501 $hash
+
 # TODO circle CI and wait for results
