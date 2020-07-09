@@ -52,7 +52,8 @@ if [ -n "$GITLAB_CI" ]; then
   MODULES_ROOT="$CI_PROJECT_DIR"
 fi
 if [ -n "$CIRCLECI" ]; then
-  MODULES_ROOT="$CIRCLE_WORKING_DIRECTORY"
+  # working directory is not expanded, see https://discuss.circleci.com/t/circle-working-directory-doesnt-expand/17007/5
+  MODULES_ROOT="${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}"
 fi
 
 if [ -n "$SSH_FROM_ENV" ]; then
