@@ -9,8 +9,8 @@ check_deployment() {
   local expectedHash=$3
 
   local counter=0
-  local maxCounter=3
-  local sleepTime=60
+  local maxCounter=60
+  local sleepTime=5
 
   # wait for 5 minutes maximum
   while [ $counter -lt $maxCounter ]; do
