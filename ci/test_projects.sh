@@ -15,7 +15,7 @@ check_deployment() {
   # wait for 5 minutes maximum
   while [ $counter -lt $maxCounter ]; do
     local serverHash=$(wget -O- -q --timeout 5 $serverURL)
-    if [ "$serverHash" = "$expectedHash" ]; then
+    if [ "$serverHash" != "${serverHash/$expectedHash/}" ]; then
       echo "$label deployment succeeded"
       return 0
     fi
@@ -39,7 +39,7 @@ create_commit () {
     git checkout -b $branch
   fi
   sed -ri "s/(compose-deploy-ci:)\w+/\1$hash/" "$configFile"
-  sed -ri "s/(CONTENT=)\w*/\1$hash/" */docker-compose.yml
+  sed -ri "s/(CONTENT=)\w*/\1$hash-$(date -Is)/" */docker-compose.yml
   git add -A
   git commit -m "Testing deployment of compose-deploy:$hash"
   git push origin $branch
