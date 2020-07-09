@@ -9,8 +9,21 @@
         MODULES_ROOT: "{{ lookup('env', 'MODULES_ROOT') }}"
         modules: "{{ hostvars['localhost']['modules'] }}"
 
+    - name: 'Docker: check for existing installation'
+      stat:
+        path: /usr/bin/docker
+      register: dockerBinary
+
     - import_tasks: tasks/install-docker.yml
+      when: not dockerBinary.stat.exists
+
+    - name: 'Docker-Compose: check for existing installation'
+      stat:
+        path: /usr/local/bin/docker-compose
+      register: dockerComposeBinary
+
     - import_tasks: tasks/install-docker-compose.yml
+      when: not dockerComposeBinary.stat.exists
 
     - name: "Create parent folders"
       file:
