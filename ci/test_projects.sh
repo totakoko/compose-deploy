@@ -61,7 +61,7 @@ git config --global user.email "maxime@dreau.fr"
 git config --global user.name "Maxime Dréau (CI)"
 
 create_commit git@gitlab.com:totakoko/compose-deploy-ci-project-gitlab.git .gitlab-ci.yml
-create_commit git@gitlab.com:totakoko/compose-deploy-ci-project-gitlab.git .circleci/config.yml
+create_commit git@github.com:totakoko/compose-deploy-ci-project-circleci.git .circleci/config.yml
 
 check_deployment "GitLab CI" totakoko.com:8501 $hash
 check_deployment "Circle CI" totakoko.com:8500 $hash
