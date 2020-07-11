@@ -27,9 +27,6 @@ jobs:
       - run: |
           ./ci/test_projects.sh
 
-          # temporary exit during tests
-          exit 1
-
       - run: |
           # promote test image
           docker tag totakoko/compose-deploy-ci:$CIRCLE_SHA1 totakoko/compose-deploy:$CIRCLE_SHA1
