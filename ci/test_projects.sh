@@ -39,7 +39,7 @@ create_commit () {
     git checkout -b $branch
   fi
   sed -ri "s/(compose-deploy-ci:)\w+/\1$hash/" "$configFile"
-  sed -ri "s/(CONTENT=)\w*/\1$hash-$(date -Is)/" */docker-compose.yml
+  sed -ri "s/(CONTENT=)\S*/\1$hash-$(date -Is)/" */docker-compose.yml
   git add -A
   git commit -m "Testing deployment of compose-deploy:$hash"
   git push origin $branch
