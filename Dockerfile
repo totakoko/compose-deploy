@@ -1,4 +1,4 @@
-FROM willhallonline/ansible:2.9-alpine
+FROM willhallonline/ansible:2.9.27-alpine-3.15
 
 LABEL maintainer="maxime@dreau.fr"
 

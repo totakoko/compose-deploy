@@ -3,7 +3,7 @@ version: 2
 jobs:
   test:
     docker:
-      - image: willhallonline/ansible:2.7-alpine
+      - image: willhallonline/ansible:2.9.27-alpine-3.15
     steps:
       - checkout
       - run: python -B -m unittest discover -p "*_test.py" playbooks/library
