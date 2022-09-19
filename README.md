@@ -76,7 +76,8 @@ Do so by adding `| base64` after the command.
 deploy:
   stage: deploy
   image: totakoko/compose-deploy
-  script: deploy
+  script:
+    - compose-deploy deploy
   only:
     - master
 ```

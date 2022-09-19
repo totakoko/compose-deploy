@@ -12,5 +12,4 @@ COPY . /compose-deploy
 RUN ln -s /compose-deploy/run.sh /usr/local/bin/compose-deploy
 
 WORKDIR /compose-deploy
-ENTRYPOINT ["compose-deploy"]
-CMD ["deploy"]
+CMD ["compose-deploy", "deploy"]
