@@ -144,6 +144,16 @@ The [.env file](https://docs.docker.com/compose/environment-variables/#the-env-f
 This can be useful for dynamic variables in the Compose file such as labels.
 
 
+### Git-crypt
+
+If you wish to store sensitive data that cannot be used in environment variables, compose-deploy supports [git-crypt](https://www.agwa.name/projects/git-crypt/) and will decode encoded files automatically.
+You will have to export the symmetric key and create the variable `CRYPT_KEY_BASE64` in the CI environment:
+
+```sh
+CRYPT_KEY_BASE64=$(git-crypt export-key -- - | base64)
+```
+
+
 ### Updating images
 
 After your infrastructure is deployed, you will presumably want to update the images on a regular basis.
