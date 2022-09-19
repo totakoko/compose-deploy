@@ -6,7 +6,7 @@ jobs:
       - image: willhallonline/ansible:2.9.27-alpine-3.15
     steps:
       - checkout
-      - run: python -B -m unittest discover -p "*_test.py" playbooks/library
+      - run: python3 -B -m unittest discover -p "*_test.py" playbooks/library
 
   build-docker:
     docker:
