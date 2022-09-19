@@ -24,7 +24,7 @@
 
 - name: "Docker: add repository"
   apt_repository:
-    repo: "deb [arch=amd64] https://download.docker.com/linux/debian stretch stable"
+    repo: "deb [arch=amd64] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
   when: not docker_binary.stat.exists
 
 - name: "Docker: install Docker"
