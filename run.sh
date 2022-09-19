@@ -2,6 +2,8 @@
 
 current_dir="$(dirname "$(readlink -f "$0")")"
 
+[ -n "$DEBUG" ] && set -x
+
 usage() {
   echo "Usage: compose-deploy <command>"
   echo "Available commands:"
