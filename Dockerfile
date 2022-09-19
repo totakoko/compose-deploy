@@ -1,5 +1,7 @@
 FROM willhallonline/ansible:2.9.27-alpine-3.15
 
+RUN apk add --no-cache --update git-crypt
+
 LABEL maintainer="maxime@dreau.fr"
 
 ENV ANSIBLE_CONFIG=/compose-deploy/ansible.cfg
