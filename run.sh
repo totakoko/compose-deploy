@@ -62,7 +62,7 @@ fi
 
 if [ -n "$CRYPT_KEY_BASE64" ]; then
   echo "Crypt key is defined. Unlocking project..."
-  cat "$CRYPT_KEY_BASE64" | base64 -d > /tmp/key-file
+  echo "$CRYPT_KEY_BASE64" | base64 -d > /tmp/key-file
   git-crypt unlock /tmp/key-file
 fi
 
