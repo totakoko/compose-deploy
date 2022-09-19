@@ -1,3 +1,8 @@
+- name: "Docker: check if docker is installed"
+  stat:
+    path: /usr/bin/docker
+  register: docker_binary
+
 - name: "Docker: install requirements"
   apt:
     name: "{{ packages }}"
@@ -10,16 +15,20 @@
       - gnupg2
       - software-properties-common
       - rsync
+  when: not docker_binary.stat.exists
 
 - name: "Docker: add GPG key"
   apt_key:
     url: https://download.docker.com/linux/debian/gpg
+  when: not docker_binary.stat.exists
 
 - name: "Docker: add repository"
   apt_repository:
     repo: "deb [arch=amd64] https://download.docker.com/linux/debian stretch stable"
+  when: not docker_binary.stat.exists
 
 - name: "Docker: install Docker"
   apt:
     name: docker-ce
     update_cache: true
+  when: not docker_binary.stat.exists
