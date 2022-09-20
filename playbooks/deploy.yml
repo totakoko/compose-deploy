@@ -74,3 +74,7 @@
             state: touch
           when: item.item.failed | default(False)
           loop: "{{ restarts.results }}"
+
+        - name: "Fail the deployment"
+          ansible.builtin.fail:
+            msg: "Some services failed to start"
