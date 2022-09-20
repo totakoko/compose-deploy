@@ -62,7 +62,7 @@
           cd "/srv/config/{{ item.item.name }}"
           docker-compose stop
           docker-compose up -d --remove-orphans
-        when: item.item.compose and item.changed
+        when: item.item.compose and item.changed and not item.manual
         register: restarts
         loop: "{{ synchronizations.results }}"
 

@@ -24,8 +24,9 @@ The layout of your infrastructure repository should be as follows.
 
 ```sh
 └── module1 # root of the Compose project module1
-    ├── docker-compose.yml # classic docker-compose file (required)
-    ├── pre.yml # contains module-specific ansible tasks (optional)
+    ├── docker-compose.yml # (required) classic docker-compose file
+    ├── pre.yml # (optional) contains module-specific ansible tasks
+    ├── .manual # (optional) mark the module as manual, Compose Deploy will not (re)start services automatically when changes occur
     └── ...
 ...
 ```

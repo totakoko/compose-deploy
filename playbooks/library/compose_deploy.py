@@ -35,6 +35,7 @@ class ComposeDeploy(object):
 
       module['compose'] = isfile('docker-compose.yml')
       module['prehook'] = isfile('pre.yml')
+      module['manual'] = isfile('.manual')
 
     return modules
 
